@@ -1,24 +1,31 @@
+import fs from 'fs';
 import express from 'express';
+import Schema from './data/schema';
+import GraphQLHTTP from 'express-graphql';
+import {graphql} from 'graphql';
+import {introspectionQuery} from 'graphql/utilities';
+
 import {MongoClient} from 'mongodb';
-import schema form './data/shema';
 
 let app = express();
 app.use(express.static('dist'));
 
-let db;
+(async () => {
+  try {
+    let db = await MongoClient.connect('mongodb://localhost:27017/lottery');
+    let schema = Schema(db);
 
-MongoClient.connect('mongodb://localhost:27017/lottery', (error, database) => {
-  if (error) throw error;
+    app.use('/graphql', GraphQLHTTP({schema, graphiql: true}));
+    app.listen(3000, () => console.log('listening on port 3000'));
 
-  db = database;
-  app.listen(3000, () => console.log('listening on port 3000'));
-});
+    let json = await graphql(schema, introspectionQuery);
+    fs.writeFile(__dirname + '/data/schema.json', JSON.stringify(json, null, 2), error => {
+      if (error) throw error;
 
-app.get('/data/megasena', (request, response) => {
-  db.collection('megasena').find({}).toArray((error, links) => {
-    if (error) throw error;
-
-    response.json(links);
-  });
-});
+      console.log("JSON schema created");
+    });
+  } catch(error) {
+    console.log(error);
+  }
+})();
 

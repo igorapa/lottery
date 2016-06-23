@@ -1,27 +1,50 @@
 import React from 'react';
+import Relay from 'react-relay';
 import styles from './index.scss';
 
 class Main extends React.Component {
   render() {
+    const {viewer: {megasena}} = this.props;
+
+    const tableBody = megasena.map((obj, index) => {
+      const {_id, Concurso, Valor_Acumulado} = obj;
+      return (
+        <tr key={_id}>
+          <td>{Concurso}</td>
+          <td>{Valor_Acumulado}</td>
+        </tr>
+      );
+    });
+
+    console.log(this);
     return (
-      <div className="container">
-        <form className="form-signin" _lpchecked="1">
-          <h2 className="form-signin-heading">Please sign in</h2>
-          <label for="inputEmail" className="sr-only">Email address</label>
-          <input type="email" id="inputEmail" className="form-control" placeholder="Email address" required="" autofocus="" autocomplete="off" />
-          <label for="inputPassword" className="sr-only">Password</label>
-          <input type="password" id="inputPassword" className="form-control" placeholder="Password" required="" autocomplete="off" />
-          <div className="checkbox">
-            <label>
-              <input type="checkbox" value="remember-me" /> Remember me
-            </label>
-          </div>
-          <button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-        </form>
-      </div>
+      <table className="table table-sm table-hover table-striped">
+        <thead>
+          <tr>
+            <th>Concurso</th>
+            <th>Valor Acumulado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tableBody}
+        </tbody>
+      </table>
     );
   }
 }
 
-export default Main;
+
+export default Relay.createContainer(Main, {
+  fragments: {
+    viewer: () => Relay.QL`
+      fragment on Viewer {
+        megasena {
+          _id
+          Concurso
+          Valor_Acumulado
+        }
+      }
+    `
+  }
+});
 
