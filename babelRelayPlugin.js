@@ -1,5 +1,5 @@
 var getBabelRelayPlugin = require('babel-relay-plugin');
 
-var schemaData = require('./data/schema.json').data;
+var schemaData = require('./app/server/data/schema.json').data;
 
 module.exports = getBabelRelayPlugin(schemaData);
