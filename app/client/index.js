@@ -1,26 +1,19 @@
 import React from 'react';
 import Relay from 'react-relay';
 import ReactDOM from 'react-dom';
-import Main from './components/Main';
+import { createHashHistory } from 'history';
+import useRelay from 'react-router-relay';
+import { Router, applyRouterMiddleware, useRouterHistory } from 'react-router';
+import routes from './configs/routes';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-class HomeRoute extends Relay.Route {
-  static routeName = 'Home';
-  static queries = {
-    viewer: (Component) => Relay.QL`
-      query MainQuery {
-        viewer {
-          ${Component.getFragment('viewer')}
-        }
-      }
-    `
-  }
-}
-
+const history = useRouterHistory(createHashHistory)({ queryKey: false });
 ReactDOM.render(
-  <Relay.RootContainer
-    Component={Main}
-    route={new HomeRoute()}
+  <Router
+    history={history}
+    routes={routes}
+    render={applyRouterMiddleware(useRelay)}
+    environment={Relay.Store}
   />,
   document.getElementById('app')
 );
