@@ -25,8 +25,7 @@ let Schema = (db) => {
         args: connectionArgs,
         resolve: (_, args) => {
           const {first} = args;
-          console.log(first);
-          const data = db.collection('megasena').find({}).toArray();
+          const data = db.collection('megasena').find({}).sort({"_id":-1}).toArray();
           const connection = connectionFromPromisedArray(data, args)
           return connection;
         }

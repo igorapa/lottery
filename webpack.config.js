@@ -1,15 +1,15 @@
-var path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var htmlWebpackPluginConfig = new HtmlWebpackPlugin({
+const htmlWebpackPluginConfig = new HtmlWebpackPlugin({
   template: path.join(__dirname, 'app/client/index.html'),
   filename: 'index.html',
   inject: 'body'
 });
 
-var extractCSS = new ExtractTextPlugin("app.css");
+const extractCSS = new ExtractTextPlugin("app.css");
 
 module.exports = {
   entry: './app/client/index.js',
