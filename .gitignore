@@ -1,4 +1,15 @@
+#dist folder
 dist
+
+# Dependency directory
 node_modules
-npm-debug.log
+
+# Dependency GraphQL
 schema.json
+
+# Mac files
+.DS_Store
+
+# Logs
+logs
+*.log
