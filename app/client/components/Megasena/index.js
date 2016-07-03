@@ -1,30 +1,56 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-import classNames from 'classnames';
+// import classNames from 'classnames';
 
-const DEFAULT_PAGE_NUMBER = 30;
+const DEFAULT_PAGE_NUMBER = 3;
 
 class Megasena extends React.Component {
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
+  };
+
+  static propTypes = {
+    location: PropTypes.object.isRequired,
+    viewer: PropTypes.object.isRequired,
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       userMoveNext: false,
-      userMovePrev: false
+      userMovePrev: false,
     };
   }
 
-  static contextTypes = {
-    router: React.PropTypes.object.isRequired
-  };
+  _nextPage = e => {
+    e.preventDefault();
+    const {
+      location: {
+        pathname,
+        query: { page },
+      },
+    } = this.props;
+    this.context.router.push({ pathname, query: { page: Number(page) + 1 } });
+  }
+
+  _prevPage = e => {
+    e.preventDefault();
+    const {
+      location: {
+        pathname,
+        query: { page },
+      },
+    } = this.props;
+    this.context.router.push({ pathname, query: { page: Number(page) - 1 } });
+  }
 
   render() {
-    console.log(this)
     const {
-      viewer: {megasenaConnection: {edges, pageInfo: {hasNextPage, hasPreviousPage}}},
+      viewer: { megasena: { games, pagination } },
     } = this.props;
 
-    const tableBody = edges.map((edge) => {
-      const {id, Concurso, Valor_Acumulado} = edge.node;
+    const tableBody = games.map(game => {
+      const { id, Concurso, Valor_Acumulado } = game;
       return (
         <tr key={id}>
           <td>{Concurso}</td>
@@ -33,13 +59,8 @@ class Megasena extends React.Component {
       );
     });
 
-    const classesButtonNext = classNames(
-      'pager-next', {'disabled': !hasNextPage && !this.state.userMovePrev}
-    );
-
-    const classesButtonPrev = classNames(
-      'pager-prev', {'disabled': !hasPreviousPage && !this.state.userMoveNext}
-    );
+    let classesButtonPrev;
+    let classesButtonNext;
 
     return (
       <div className="container">
@@ -67,78 +88,13 @@ class Megasena extends React.Component {
       </div>
     );
   }
-
-  _nextPage = e => {
-    e.preventDefault();
-    const {
-      viewer: {
-        megasenaConnection: {
-          pageInfo: {
-            hasNextPage,
-            endCursor
-          }
-        }
-      },
-      relay: {setVariables}
-    } = this.props;
-
-    if (!hasNextPage && !this.state.userMovePrev) {
-      return null;
-    }
-
-    this.setState({
-      userMoveNext: true,
-      userMovePrev: false,
-    });
-
-    setVariables({
-      first: DEFAULT_PAGE_NUMBER,
-      after: endCursor,
-      last: null,
-      before: null
-    });
-  }
-
-  _prevPage = e => {
-    e.preventDefault();
-
-    const {
-      viewer: {
-        megasenaConnection: {
-          pageInfo: {
-            hasPreviousPage,
-            startCursor
-          }
-        }
-      },
-      relay: {setVariables}
-    } = this.props;
-
-    if (!hasPreviousPage && !this.state.userMoveNext) {
-      return null;
-    }
-
-    this.setState({
-      userMovePrev: true,
-      userMoveNext: false
-    });
-
-    setVariables({
-      first: null,
-      after: null,
-      last: DEFAULT_PAGE_NUMBER,
-      before: startCursor
-    });
-  }
 }
 
 
 export default Relay.createContainer(Megasena, {
   initialVariables: {
-    first: DEFAULT_PAGE_NUMBER,
-    after: null,
-    last: null,
-    before: null
+    page: 1,
+    itemsPerPage: DEFAULT_PAGE_NUMBER,
   },
   // prepareVariables(){
   //   console.log('prepareVariables', arguments);
@@ -147,28 +103,19 @@ export default Relay.createContainer(Megasena, {
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {
-        megasenaConnection(
-          first: $first,
-          after: $after,
-          last: $last,
-          before: $before
-        ) {
-          pageInfo {
-            hasNextPage
-            hasPreviousPage
-            startCursor
-            endCursor
+        megasena(page: $page, itemsPerPage: $itemsPerPage) {
+          pagination {
+            pages
+            page
+            itemsPerPage
           }
-          edges {
-            cursor
-            node {
-              id
-              Concurso
-              Valor_Acumulado
-            }
+          games {
+            id,
+            Concurso,
+            Valor_Acumulado
           }
         }
       }
-    `
-  }
+    `,
+  },
 });

@@ -8,9 +8,8 @@ import Megasena from '../components/Megasena';
 import ViewerQueries from '../queries/ViewerQueries';
 
 function prepareParams(_, { location }) {
-  console.log('prepareParams', _);
-  const { query: { itemsPerPage } } = location;
-  return { first: Number(itemsPerPage) };
+  const { query: { page } } = location;
+  return { page: Number(page) };
 }
 
 export default (

@@ -4,9 +4,8 @@ import { Link } from 'react-router';
 
 class Home extends React.Component {
   render() {
-    // console.log('Home');
     return (
-      <Link to={{ pathname: '/megasena', query: { itemsPerPage: 1, page: 2 } }}>
+      <Link to={{ pathname: '/megasena', query: { page: 1 } }}>
         <button type="button" className="btn btn-lg btn-success">
           Megasena
         </button>
