@@ -1,69 +1,98 @@
 import {
   GraphQLSchema,
   GraphQLObjectType,
-  GraphQLList,
   GraphQLInt,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLID
+  GraphQLID,
+  GraphQLList,
 } from 'graphql';
 
-import {
-  connectionDefinitions,
-  connectionArgs,
-  connectionFromPromisedArray,
-  mutationWithClientMutationId
-} from 'graphql-relay';
-
-let Schema = (db) => {
-  let viewer = {};
-  let viewerType = new GraphQLObjectType({
-    name: 'Viewer',
+const Schema = (db) => {
+  const PaginationType = new GraphQLObjectType({
+    name: 'Pagination',
     fields: () => ({
-      megasenaConnection: {
-        type: megasenaConnection.connectionType,
-        args: connectionArgs,
-        resolve: (_, args) => {
-          const {first} = args;
-          const data = db.collection('megasena').find({}).sort({"_id":-1}).toArray();
-          const connection = connectionFromPromisedArray(data, args)
-          return connection;
-        }
-      }
-    })
-  })
+      pages: {
+        type: GraphQLInt,
+        resolve: (root) => {
+          const { itemsPerPage } = root;
+          const dbPromiseCount = root.db.collection('megasena').count();
+          return dbPromiseCount.then((data) => Math.ceil(data / itemsPerPage));
+        },
+      },
+      page: {
+        type: GraphQLInt,
+        resolve: ({ page }) => page,
+      },
+      itemsPerPage: {
+        type: GraphQLInt,
+        resolve: ({ itemsPerPage }) => itemsPerPage,
+      },
+    }),
+  });
 
-  let megasenaType = new GraphQLObjectType({
-    name: 'MegaSena',
+  const GamesMegasenaType = new GraphQLObjectType({
+    name: 'GamesMegasena',
     fields: () => ({
       id: {
         type: new GraphQLNonNull(GraphQLID),
-        resolve: (obj) => obj._id
+        resolve: (obj) => obj._id,
       },
-      Concurso: {type: GraphQLInt},
-      Valor_Acumulado: {type: GraphQLString}
-    })
+      Concurso: { type: GraphQLInt },
+      Valor_Acumulado: { type: GraphQLString },
+    }),
   });
 
-  let megasenaConnection = connectionDefinitions({
+  const MegasenaType = new GraphQLObjectType({
     name: 'Megasena',
-    nodeType: megasenaType
+    fields: () => ({
+      pagination: {
+        type: PaginationType,
+        resolve: (root) => root,
+      },
+      games: {
+        type: new GraphQLList(GamesMegasenaType),
+        resolve: (root) => {
+          const { itemsPerPage, page } = root;
+          const test = root.db.collection('megasena')
+                              .find({})
+                              .sort({ _id: -1 })
+                              .skip((page - 1) * itemsPerPage)
+                              .limit(itemsPerPage)
+                              .toArray();
+          return test.then(data => data);
+        },
+      },
+    }),
   });
 
-  let schema = new GraphQLSchema({
+  const viewerType = new GraphQLObjectType({
+    name: 'Viewer',
+    fields: () => ({
+      megasena: {
+        args: {
+          page: { type: new GraphQLNonNull(GraphQLInt) },
+          itemsPerPage: { type: new GraphQLNonNull(GraphQLInt) },
+        },
+        type: MegasenaType,
+        resolve: (a: db, args) => ({ db, ...args }),
+      },
+    }),
+  });
+
+  const schema = new GraphQLSchema({
     query: new GraphQLObjectType({
       name: 'MainQuery',
       fields: () => ({
         viewer: {
           type: viewerType,
-          resolve: () => viewer
-        }
-      })
+          resolve: () => db,
+        },
+      }),
     }),
   });
 
   return schema;
-}
+};
 
 export default Schema;
-
