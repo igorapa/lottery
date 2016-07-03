@@ -3,7 +3,7 @@ import Relay from 'react-relay';
 
 class Main extends React.Component {
   render() {
-    console.log('main');
+    // console.log('main', this);
     return (
       <div className="container">
         {this.props.children}

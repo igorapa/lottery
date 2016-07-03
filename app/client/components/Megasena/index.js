@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 const DEFAULT_PAGE_NUMBER = 30;
 
-class Main extends React.Component {
+class Megasena extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -13,7 +13,12 @@ class Main extends React.Component {
     };
   }
 
+  static contextTypes = {
+    router: React.PropTypes.object.isRequired
+  };
+
   render() {
+    console.log(this)
     const {
       viewer: {megasenaConnection: {edges, pageInfo: {hasNextPage, hasPreviousPage}}},
     } = this.props;
@@ -128,13 +133,17 @@ class Main extends React.Component {
 }
 
 
-export default Relay.createContainer(Main, {
+export default Relay.createContainer(Megasena, {
   initialVariables: {
     first: DEFAULT_PAGE_NUMBER,
     after: null,
     last: null,
     before: null
   },
+  // prepareVariables(){
+  //   console.log('prepareVariables', arguments);
+  //   return {};
+  // },
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {

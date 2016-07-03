@@ -7,9 +7,20 @@ import Home from '../components/Home';
 import Megasena from '../components/Megasena';
 import ViewerQueries from '../queries/ViewerQueries';
 
+function prepareParams(_, { location }) {
+  console.log('prepareParams', _);
+  const { query: { itemsPerPage } } = location;
+  return { first: Number(itemsPerPage) };
+}
+
 export default (
   <Route path="/" component={Main}>
     <IndexRoute component={Home} />
-    <Route path="megasena" component={Megasena} queries={ViewerQueries} />
+    <Route
+      path="megasena"
+      component={Megasena}
+      queries={ViewerQueries}
+      prepareParams={prepareParams}
+    />
   </Route>
 );
