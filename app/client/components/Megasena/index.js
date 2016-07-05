@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
-// import classNames from 'classnames';
 
 const DEFAULT_PAGE_NUMBER = 3;
 
@@ -90,16 +89,11 @@ class Megasena extends React.Component {
   }
 }
 
-
 export default Relay.createContainer(Megasena, {
   initialVariables: {
     page: 1,
     itemsPerPage: DEFAULT_PAGE_NUMBER,
   },
-  // prepareVariables(){
-  //   console.log('prepareVariables', arguments);
-  //   return {};
-  // },
   fragments: {
     viewer: () => Relay.QL`
       fragment on Viewer {

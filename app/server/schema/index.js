@@ -14,9 +14,8 @@ const Schema = (db) => {
     fields: () => ({
       pages: {
         type: GraphQLInt,
-        resolve: (root) => {
-          const { itemsPerPage } = root;
-          const dbPromiseCount = root.db.collection('megasena').count();
+        resolve: ({ database, itemsPerPage }) => {
+          const dbPromiseCount = database.collection('megasena').count();
           return dbPromiseCount.then((data) => Math.ceil(data / itemsPerPage));
         },
       },
@@ -52,16 +51,15 @@ const Schema = (db) => {
       },
       games: {
         type: new GraphQLList(GamesMegasenaType),
-        resolve: (root) => {
-          const { itemsPerPage, page } = root;
-          const test = root.db.collection('megasena')
-                              .find({})
-                              .sort({ _id: -1 })
-                              .skip((page - 1) * itemsPerPage)
-                              .limit(itemsPerPage)
-                              .toArray();
-          return test.then(data => data);
-        },
+        resolve: ({ database, itemsPerPage, page }) => (
+          database.collection('megasena')
+                  .find({})
+                  .sort({ _id: -1 })
+                  .skip((page - 1) * itemsPerPage)
+                  .limit(itemsPerPage)
+                  .toArray()
+                  .then(data => data)
+        ),
       },
     }),
   });
@@ -75,7 +73,7 @@ const Schema = (db) => {
           itemsPerPage: { type: new GraphQLNonNull(GraphQLInt) },
         },
         type: MegasenaType,
-        resolve: (a: db, args) => ({ db, ...args }),
+        resolve: (database, args) => ({ database, ...args }),
       },
     }),
   });

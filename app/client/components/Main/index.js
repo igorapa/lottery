@@ -1,16 +1,15 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
 
-class Main extends React.Component {
-  render() {
-    // console.log('main', this);
-    return (
-      <div className="container">
-        {this.props.children}
-      </div>
-    );
-  }
-}
+const Main = props => (
+  <div className="container">
+    {props.children}
+  </div>
+);
+
+Main.propTypes = {
+  children: PropTypes.element,
+};
 
 export default Relay.createContainer(Main, {
   fragments: {},
