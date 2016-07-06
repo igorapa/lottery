@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import Relay from 'react-relay';
+import Pagination from '../Pagination';
 
 const DEFAULT_PAGE_NUMBER = 3;
 
@@ -74,16 +75,10 @@ class Megasena extends React.Component {
             {tableBody}
           </tbody>
         </table>
-        <nav>
-          <ul className="pager">
-            <li className={classesButtonPrev} onClick={this._prevPage}>
-              <a href="">Older</a>
-            </li>
-            <li className={classesButtonNext} onClick={this._nextPage}>
-              <a href="">Newer</a>
-            </li>
-          </ul>
-        </nav>
+        <Pagination
+          total={10}
+          page={1}
+        />
       </div>
     );
   }
