@@ -9,7 +9,7 @@ export default function getItems(Component, page, total, onChangePage) {
         active={indexUpdated === page}
         key={indexUpdated}
         onClick={onChangePage.bind(null, indexUpdated)}
-        page={indexUpdated}
+        label={String(indexUpdated)}
       />
     );
   });

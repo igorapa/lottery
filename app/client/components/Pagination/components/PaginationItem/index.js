@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 
-function PaginationItem({ active, onClick, page }) {
+function PaginationItem({ active, onClick, label }) {
   const classesWrapItem = classNames('page-item', { active });
   const validateOnClick = active
     ? null
@@ -10,16 +10,21 @@ function PaginationItem({ active, onClick, page }) {
   return (
     <li className={classesWrapItem} onClick={validateOnClick}>
       <a className="page-link" style={{ cursor: 'pointer' }}>
-        {page}{active && <span className="sr-only">(current)</span>}
+        {label}{active && <span className="sr-only">(current)</span>}
       </a>
     </li>
   );
 }
 
+PaginationItem.defaultProps = {
+  active: false,
+  onClick: () => null,
+};
+
 PaginationItem.propTypes = {
   active: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
+  label: PropTypes.string.isRequired,
 };
 
 export default PaginationItem;
