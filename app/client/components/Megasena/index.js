@@ -22,31 +22,23 @@ class Megasena extends React.Component {
     };
   }
 
-  _nextPage = e => {
-    e.preventDefault();
-    const {
-      location: {
-        pathname,
-        query: { page },
-      },
-    } = this.props;
-    this.context.router.push({ pathname, query: { page: Number(page) + 1 } });
-  }
-
-  _prevPage = e => {
-    e.preventDefault();
-    const {
-      location: {
-        pathname,
-        query: { page },
-      },
-    } = this.props;
-    this.context.router.push({ pathname, query: { page: Number(page) - 1 } });
+  _handleOnChangePage = (page, event) => {
+    event.preventDefault();
+    const { location: { pathname } } = this.props;
+    this.context.router.push({ pathname, query: { page } });
   }
 
   render() {
     const {
-      viewer: { megasena: { games, pagination } },
+      viewer: {
+        megasena: {
+          games,
+          pagination: {
+            pages,
+            page,
+          },
+        },
+      },
     } = this.props;
 
     const tableBody = games.map(game => {
@@ -58,9 +50,6 @@ class Megasena extends React.Component {
         </tr>
       );
     });
-
-    let classesButtonPrev;
-    let classesButtonNext;
 
     return (
       <div className="container">
@@ -76,8 +65,9 @@ class Megasena extends React.Component {
           </tbody>
         </table>
         <Pagination
-          total={10}
-          page={1}
+          total={pages}
+          page={page}
+          onChangePage={this._handleOnChangePage}
         />
       </div>
     );
