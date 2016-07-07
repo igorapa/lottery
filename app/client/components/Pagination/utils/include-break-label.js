@@ -1,7 +1,7 @@
 import verifyKey from './verify-key';
 
-const PADDING = 1;
-const PROGRESS = 4;
+const PADDING = 2;
+const PROGRESS = 4 + PADDING;
 const LESS_ARRAY = 1;
 
 export default function includeBreakLabel(

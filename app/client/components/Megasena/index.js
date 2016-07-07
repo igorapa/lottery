@@ -34,7 +34,7 @@ class Megasena extends React.Component {
         megasena: {
           games,
           pagination: {
-            pages,
+            pages: total,
             page,
           },
         },
@@ -51,6 +51,11 @@ class Megasena extends React.Component {
       );
     });
 
+    const renderPagination = total > 1;
+    const propsPagination = {
+      page, total, onChangePage: this._handleOnChangePage,
+    };
+
     return (
       <div className="container">
         <table className="table table-sm table-hover table-striped">
@@ -64,11 +69,7 @@ class Megasena extends React.Component {
             {tableBody}
           </tbody>
         </table>
-        <Pagination
-          total={pages}
-          page={page}
-          onChangePage={this._handleOnChangePage}
-        />
+        {renderPagination && <Pagination {...propsPagination} />}
       </div>
     );
   }

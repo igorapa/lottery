@@ -11,9 +11,11 @@ function Pagination(props) {
   const hasNext = page < total;
   let itemsList = getItems(PaginationItem, page, total, onChangePage);
 
-  itemsList = includeBreakLabel(
-    <PaginationItem label="..." />, itemsList, page, total
-  );
+  if (total > 9) {
+    itemsList = includeBreakLabel(
+      <PaginationItem label="..." />, itemsList, page, total
+    );
+  }
 
   const goToPage = p => onChangePage.bind(null, page + p);
 
